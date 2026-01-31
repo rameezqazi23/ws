@@ -1,4 +1,4 @@
-# ws — Web Sockets In Action
+# ws — Web Sockets In Action (A must read for better understanding)
 
 A compact demo showing WebSocket usage from the browser (client) and Node (server). This repository contains a minimal client UI and an example Node server so you can explore real‑time, full‑duplex browser ↔ server communication.
 
