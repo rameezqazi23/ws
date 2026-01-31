@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Live Test</title>
+  </head>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background-color: #121212;
+      color: #ffffff;
+    }
+    #log {
+      background: #000;
+      padding: 10px;
+      height: 300px;
+      overflow-y: scroll;
+      border: 1px solid #333;
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+    }
+    .status-on {
+      color: #00ff00;
+    }
+    .status-off {
+      color: #ff0000;
+    }
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: red;
+    }
+    .status-dot.connected {
+      background-color: green;
+    }
+    #message-form {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+  </style>
+  <body>
+    <h1>WebSocket Live Test</h1>
+    <div class="status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">Disconnected</span>
+    </div>
+    <div id="log"></div>
+
+    <form id="message-form">
+      <input type="text" id="message-input" placeholder="Type a message..." />
+      <button id="send">Send</button>
+    </form>
+  </body>
+
+  <script>
+    const statusText = document.getElementById("statusText");
+    const statusDot = document.getElementById("statusDot");
+    const log = document.getElementById("log");
+    const messageInput = document.getElementById("message-input");
+
+    // 1. Initialize WebSocket connection
+    const socket = new WebSocket("ws://localhost:8080");
+
+    // 2. Handle WebSocket events
+    const appendLog = (label, message) => {
+      const entry = `${new Date().toLocaleTimeString()} ${label}\n ${message}`;
+
+      log.textContent = entry + log.textContent;
+    };
+
+    socket.addEventListener("open", () => {
+      statusText.textContent = "Connected";
+      //   statusText.className = "status-on";
+      statusDot.classList.add("connected");
+
+      appendLog("[SYSTEM]", "Connected to server");
+    });
+
+    socket.addEventListener("close", () => {
+      statusText.textContent = "Disconnected";
+      //   statusText.className = "status-off";
+      statusDot.classList.remove("connected");
+
+      appendLog("[SYSTEM]", "Disconnected from server");
+    });
+
+    socket.addEventListener("message", (event) => {
+      appendLog("[RECEIVED]", event?.data);
+    });
+
+    socket.addEventListener("error", (error) => {
+      console.log("Error: ", error?.message);
+    });
+  </script>
+</html>
